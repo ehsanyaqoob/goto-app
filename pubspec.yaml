@@ -1,0 +1,64 @@
+name: goto
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ">=3.8.1 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+ 
+  cupertino_icons: ^1.0.6
+  sizer: ^2.0.15
+  mask_text_input_formatter: ^2.9.0
+  flutter_svg: ^2.0.10+1
+  flutter_otp_text_field: ^1.1.0+2
+  cached_network_image: ^3.3.1
+  get: ^4.6.6
+  dotted_line: ^3.2.2
+  http: ^1.2.2
+  shared_preferences: ^2.2.3
+  fluttertoast: ^8.2.6
+  cnic_scanner: ^0.0.5
+  image_picker: ^1.1.2
+  url_launcher: ^6.3.0
+  intl: ^0.19.0
+  file_picker: ^9.0.2
+  device_imei: ^0.0.4+2
+  flutter_animate: ^4.5.2
+  google_fonts: ^6.2.1
+  smooth_page_indicator: ^1.2.1
+  get_storage: ^2.1.1
+  sliding_clipped_nav_bar: ^3.1.1
+  animated_notch_bottom_bar: ^1.0.3
+  cupertino_onboarding: ^1.3.0
+  table_calendar: ^3.1.3
+  provider: ^6.1.5
+  path_provider: ^2.1.5
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  hive_generator: ^2.0.1
+  build_runner: ^2.5.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/png/
+  fonts:
+    - family: BalsamiqSans
+      fonts:
+        - asset: assets/fonts/BalsamiqSans-Regular.ttf
+        - asset: assets/fonts/BalsamiqSans-Bold.ttf
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto-Bold.ttf
+    
