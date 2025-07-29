@@ -43,7 +43,7 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final defaultRadius = borderRadius ?? 12.0;
-    final defaultHeight = height ?? 6.h;
+    final defaultHeight = height ?? 7.h;
     final defaultWidth = width ?? double.infinity;
     final defaultFilledColor = filledColor ?? AppColors.primary;
     final defaultLoaderColor = loaderColor ?? AppColors.appWhite;

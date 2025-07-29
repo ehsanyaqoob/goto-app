@@ -1,192 +1,157 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:goto/controllers/notes-cont.dart';
-import 'package:goto/models/note-input-panel.dart';
-import 'package:goto/models/task-model.dart';
-import 'package:sizer/sizer.dart';
+// import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:goto/widgets/add_task_bottom_sheet.dart';
+// import 'package:goto/controllers/task_controller.dart';
+// import 'package:goto/models/task_model.dart';
+// import 'package:intl/intl.dart';
 
-class TaskView extends StatefulWidget {
-  const TaskView({super.key});
+// class TaskView extends StatefulWidget {
+//   const TaskView({super.key});
 
-  @override
-  State<TaskView> createState() => _TaskViewState();
-}
+//   @override
+//   State<TaskView> createState() => _TaskViewState();
+// }
 
-class _TaskViewState extends State<TaskView> {
-  final NotesController controller = Get.find<NotesController>();
-  DateTime selectedDate = DateTime.now();
+// class _TaskViewState extends State<TaskView> {
+//   final TaskController controller = Get.put(TaskController());
 
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      backgroundColor: CupertinoColors.systemGroupedBackground,
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          'Notes',
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
-        ),
-        trailing: GestureDetector(
-          onTap: _showNoteInputPanel,
-          child: const Icon(CupertinoIcons.pencil),
-        ),
-      ),
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Inline Cupertino Date Picker
-            Container(
-              height: 150,
-              color: CupertinoColors.systemGroupedBackground,
-              child: CupertinoDatePicker(
-                mode: CupertinoDatePickerMode.date,
-                initialDateTime: selectedDate,
-                onDateTimeChanged: (DateTime newDate) {
-                  setState(() => selectedDate = newDate);
-                  // You can add logic here to filter notes by selected date
-                },
-              ),
-            ),
+//   @override
+//   Widget build(BuildContext context) {
+//     return CupertinoPageScaffold(
+//       navigationBar: const CupertinoNavigationBar(
+//         middle: Text("📋 My Tasks"),
+//       ),
+//       child: SafeArea(
+//         child: Column(
+//           children: [
+//             _buildDateSelector(context),
+//             Expanded(child: Obx(() => _buildTaskList())),
+//             _buildAddTaskButton(context),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
 
-            // Notes List
-            Expanded(
-              child: Obx(() {
-                final allNotes = controller.allNotes;
+//   Widget _buildDateSelector(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () => showCupertinoModalPopup(
+//         context: context,
+//         builder: (_) => Container(
+//           height: 250,
+//           color: CupertinoColors.systemBackground.resolveFrom(context),
+//           child: CupertinoDatePicker(
+//             mode: CupertinoDatePickerMode.date,
+//             initialDateTime: controller.selectedDate.value,
+//             onDateTimeChanged: controller.updateSelectedDate,
+//           ),
+//         ),
+//       ),
+//       child: Container(
+//         margin: const EdgeInsets.all(16),
+//         padding: const EdgeInsets.symmetric(vertical: 10),
+//         decoration: BoxDecoration(
+//           color: CupertinoColors.systemGrey5,
+//           borderRadius: BorderRadius.circular(8),
+//         ),
+//         child: Obx(() => Row(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 const Icon(CupertinoIcons.calendar),
+//                 const SizedBox(width: 6),
+//                 Text(
+//                   _formattedDate(controller.selectedDate.value),
+//                   style: const TextStyle(fontSize: 16),
+//                 )
+//               ],
+//             )),
+//       ),
+//     );
+//   }
 
-                if (allNotes.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'No notes yet. Tap the pencil to add.',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: CupertinoColors.systemGrey,
-                      ),
-                    ),
-                  );
-                }
+//   Widget _buildTaskList() {
+//     final tasks = controller.getTasksForDate(controller.selectedDate.value);
+//     if (tasks.isEmpty) {
+//       return const Center(
+//         child: Text("😴 No tasks yet!", style: TextStyle(color: CupertinoColors.systemGrey)),
+//       );
+//     }
 
-                return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: ListView.builder(
-                    key: ValueKey(allNotes.length),
-                    padding: EdgeInsets.only(bottom: 5.h),
-                    itemCount: allNotes.length,
-                    itemBuilder: (context, index) {
-                      final note = allNotes[index];
-                      return NoteListItem(note: note, index: index);
-                    },
-                  ),
-                );
-              }),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+//     return ListView.builder(
+//       padding: const EdgeInsets.only(bottom: 80),
+//       itemCount: tasks.length,
+//       itemBuilder: (context, index) {
+//         final task = tasks[index];
+//         return Padding(
+//           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+//           child: Dismissible(
+//             key: Key(task.key.toString()),
+//             direction: DismissDirection.endToStart,
+//             onDismissed: (_) => controller.deleteTask(index),
+//             background: Container(
+//               color: CupertinoColors.systemRed,
+//               alignment: Alignment.centerRight,
+//               padding: const EdgeInsets.only(right: 20),
+//               child: const Icon(CupertinoIcons.delete, color: Colors.white),
+//             ),
+//             child: AnimatedContainer(
+//               duration: const Duration(milliseconds: 300),
+//               decoration: BoxDecoration(
+//                 color: CupertinoColors.systemGrey6,
+//                 borderRadius: BorderRadius.circular(10),
+//               ),
+//               child: ListTile(
+//                 leading: CupertinoButton(
+//                   padding: EdgeInsets.zero,
+//                   onPressed: () => controller.toggleTaskCompletion(index),
+//                   child: Icon(
+//                     task.isDone
+//                         ? CupertinoIcons.check_mark_circled_solid
+//                         : CupertinoIcons.circle,
+//                     color: task.isDone
+//                         ? CupertinoColors.activeGreen
+//                         : CupertinoColors.inactiveGray,
+//                   ),
+//                 ),
+//                 title: Text(
+//                   task.description, // Changed from task.title to task.description
+//                   style: TextStyle(
+//                     fontSize: 16,
+//                     decoration: task.isDone ? TextDecoration.lineThrough : null,
+//                     color: task.isDone
+//                         ? CupertinoColors.systemGrey
+//                         : CupertinoColors.label,
+//                   ),
+//                 ),
+//                 subtitle: Text(
+//                   DateFormat.jm().format(task.date),
+//                   style: const TextStyle(color: CupertinoColors.systemGrey),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
 
-  void _showNoteInputPanel() {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (_) => NoteInputPanel(
-        onClose: () => Navigator.of(context).pop(),
-      ),
-    );
-  }
-}
+//   Widget _buildAddTaskButton(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 12.0),
+//       child: CupertinoButton.filled(
+//         onPressed: () {
+//           showCupertinoModalPopup(
+//             context: context,
+//             builder: (_) => const AddTaskBottomSheet(),
+//           );
+//         },
+//         child: const Text("➕ Add New Task"),
+//       ),
+//     );
+//   }
 
-class NoteListItem extends StatelessWidget {
-  final NoteModel note;
-  final int index;
-
-  const NoteListItem({
-    super.key,
-    required this.note,
-    required this.index,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = Get.find<NotesController>();
-
-    return Dismissible(
-      key: Key(note.key.toString()),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: EdgeInsets.symmetric(horizontal: 5.w),
-        color: CupertinoColors.destructiveRed,
-        child: const Icon(CupertinoIcons.delete_solid, color: Colors.white),
-      ),
-      onDismissed: (_) => controller.deleteNote(index),
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 4.w),
-        padding: EdgeInsets.all(3.w),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: CupertinoColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: () => controller.toggleComplete(index),
-              child: Icon(
-                note.isCompleted
-                    ? CupertinoIcons.checkmark_circle_fill
-                    : CupertinoIcons.circle,
-                color: note.isCompleted
-                    ? CupertinoColors.activeGreen
-                    : CupertinoColors.systemGrey,
-              ),
-            ),
-            SizedBox(width: 3.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    note.title,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w600,
-                      decoration: note.isCompleted
-                          ? TextDecoration.lineThrough
-                          : TextDecoration.none,
-                      color: note.isCompleted
-                          ? CupertinoColors.systemGrey
-                          : CupertinoColors.label,
-                    ),
-                  ),
-                  if (note.description.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text(
-                        note.description,
-                        style: TextStyle(
-                          fontSize: 10.sp,
-                          color: CupertinoColors.inactiveGray,
-                          decoration: note.isCompleted
-                              ? TextDecoration.lineThrough
-                              : TextDecoration.none,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            const Icon(CupertinoIcons.right_chevron, size: 18),
-          ],
-        ),
-      ),
-    );
-  }
-}
+//   String _formattedDate(DateTime date) {
+//     return DateFormat('MMMM d, yyyy').format(date);
+//   }
+// }

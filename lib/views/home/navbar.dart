@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:goto/constants/Theme/app_colors.dart';
+import 'package:goto/controllers/add-task-model.dart';
+import 'package:goto/controllers/task_controller.dart';
 import 'package:goto/views/home/home-view.dart';
 import 'package:goto/views/home/profile-view.dart';
-import 'package:goto/views/home/task-view.dart';
 import 'package:goto/views/screens/analytics-view.dart';
-import 'package:goto/views/screens/calendar-view.dart';
+import 'package:goto/views/screens/task-view.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -15,26 +17,38 @@ class MainNavigation extends StatefulWidget {
 }
 
 class _MainNavigationState extends State<MainNavigation> {
+  final TaskController taskController = Get.put(TaskController());
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
     HomeView(),
-    CalendarView(),
-    TaskView(), // This is the floating Add
+    TaskView(),       // Calendar view showing tasks
+    const SizedBox.shrink(), // Placeholder for FAB
     AnalyticsView(),
     ProfileView(),
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
+    if (index == 2) {
+      _showAddTaskBottomSheet();
+      return;
+    }
+    setState(() => _currentIndex = index);
   }
 
-  Widget _buildIcon(int index, IconData activeIcon, IconData inactiveIcon) {
+  void _showAddTaskBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) =>  AddTaskBottomSheet(),
+    );
+  }
+
+  Widget _buildIcon(int index, IconData filled, IconData outline) {
     final isActive = _currentIndex == index;
     return Icon(
-      isActive ? activeIcon : inactiveIcon,
+      isActive ? filled : outline,
       color: isActive ? Colors.white : AppColors.greylight,
       size: 26,
     );
@@ -64,7 +78,7 @@ class _MainNavigationState extends State<MainNavigation> {
                   icon: _buildIcon(1, CupertinoIcons.calendar, CupertinoIcons.calendar_today),
                   onPressed: () => _onItemTapped(1),
                 ),
-                const SizedBox(width: 48), // space for FAB
+                const SizedBox(width: 48), // For FAB
                 IconButton(
                   icon: _buildIcon(3, CupertinoIcons.graph_circle_fill, CupertinoIcons.graph_circle),
                   onPressed: () => _onItemTapped(3),
@@ -77,15 +91,36 @@ class _MainNavigationState extends State<MainNavigation> {
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _onItemTapped(2),
-          elevation: 10,
-          backgroundColor: AppColors.lime,
-          shape: const CircleBorder(),
-          child: const Icon(CupertinoIcons.add, size: 32, color: Colors.white),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: Container(
+  height: 56, // Standard FAB size
+  width: 56,
+  decoration: BoxDecoration(
+    shape: BoxShape.circle,
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.3),
+        blurRadius: 8,
+        spreadRadius: 1,
+        offset: Offset(0, 3),
       ),
-    );
+    ],
+    gradient: LinearGradient(
+      colors: [
+        AppColors.lime,
+        AppColors.lime.withOpacity(0.9),
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    ),
+  ),
+  child: FloatingActionButton(
+    onPressed: _showAddTaskBottomSheet,
+    backgroundColor: Colors.transparent,
+    elevation: 0, // Remove default elevation
+    child: Icon(Icons.add, color: Colors.white, size: 24),
+  ),
+),
+floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    ));
   }
 }

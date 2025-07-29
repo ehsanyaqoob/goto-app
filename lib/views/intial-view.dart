@@ -1,9 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:goto/Constants/exports.dart';
 import 'package:goto/constants/Theme/app_assets.dart';
-import 'package:goto/constants/Theme/app_colors.dart';
-import 'package:goto/views/auth/authentication.dart';
+import 'package:goto/constants/Theme/app_colors.dart' hide AppColors;
 import 'package:goto/views/home/navbar.dart';
 import 'package:goto/widgets/custom_button.dart';
 import 'package:goto/widgets/custom_text.dart';
@@ -25,28 +25,33 @@ class _InitialViewState extends State<InitialView>
 
   bool _isImagePrecached = false;
 
-void goToAuthScreen(BuildContext context) {
-  Navigator.of(context).push(PageRouteBuilder(
-    transitionDuration: const Duration(milliseconds: 500),
-    pageBuilder: (_, __, ___) => MainNavigation(),
-    transitionsBuilder: (_, animation, __, child) {
-      const begin = Offset(1.0, 0.0); // slide from right
-      const end = Offset.zero;
-      const curve = Curves.easeInOut;
+  void goToAuthScreen(BuildContext context) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 500),
+        pageBuilder: (_, __, ___) => MainNavigation(),
+        transitionsBuilder: (_, animation, __, child) {
+          const begin = Offset(1.0, 0.0); // slide from right
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
 
-      final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-      final opacity = Tween<double>(begin: 0.0, end: 1.0).animate(animation);
+          final tween = Tween(
+            begin: begin,
+            end: end,
+          ).chain(CurveTween(curve: curve));
+          final opacity = Tween<double>(
+            begin: 0.0,
+            end: 1.0,
+          ).animate(animation);
 
-      return SlideTransition(
-        position: animation.drive(tween),
-        child: FadeTransition(
-          opacity: opacity,
-          child: child,
-        ),
-      );
-    },
-  ));
-}
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: FadeTransition(opacity: opacity, child: child),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -54,7 +59,7 @@ void goToAuthScreen(BuildContext context) {
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1300),
+      duration: const Duration(milliseconds: 600),
     );
 
     final curvedAnimation = CurvedAnimation(
@@ -158,13 +163,22 @@ void goToAuthScreen(BuildContext context) {
                             textAlign: TextAlign.center,
                           ),
                           CustomButton(
-  borderRadius: 12.0,
-  onTap: () => goToAuthScreen(context),
+                            borderRadius: 12.0,
+                            // onTap: () => goToAuthScreen(context),
+                            onTap: () {
+                              // Delay slightly to let UI finish any subtle effects before navigation
+  Future.delayed(Duration(milliseconds: 50), () {
+    Get.to(
+      () => const MainNavigation(),
+      transition: Transition.cupertino,
+      duration: const Duration(milliseconds: 450),
+    );
+  });
+                            },
 
-  title: 'Get Started',
-  fillColor: true,
-),
-
+                            title: 'Get Started',
+                            fillColor: true,
+                          ),
                         ],
                       ),
                     ),

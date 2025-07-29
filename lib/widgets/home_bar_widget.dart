@@ -1,15 +1,16 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:goto/constants/exports.dart'; // Assuming this includes AppColors, etc.
+import 'package:goto/constants/exports.dart';
+import 'package:goto/widgets/custom_text.dart';
 import 'package:sizer/sizer.dart';
 
-class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CupertinoHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color backgroundColor;
   final String userName;
   final VoidCallback onNotificationPressed;
 
-  const HomeAppBar({
+  const CupertinoHomeAppBar({
     super.key,
     required this.backgroundColor,
     required this.userName,
@@ -20,44 +21,51 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
-          color: backgroundColor.withOpacity(0.8),
-          // padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 1.h, left: 4.w, right: 4.w, bottom: 1.5.h),
+          padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top + 1.5.h,
+            bottom: 1.5.h,
+            left: 0.w,
+            right: 0.w,
+          ),
+          color: backgroundColor.withOpacity(0.75),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Profile and greeting
+              // 👋 Greeting + Name
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Good day,",
-                    style: TextStyle(
-                      fontSize: 11.sp,
-                      color: Colors.grey.shade600,
-                      fontWeight: FontWeight.w400,
-                    ),
+                  CustomText(
+                    text: 
+                    "Wellcome Back",
+                          fontSize: 11.sp,
+                          color: CupertinoColors.systemGrey,
+                          fontWeight: FontWeight.w400,
+                      
                   ),
-                  Text(
+                  CustomText(
+                    text: 
                     userName,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      letterSpacing: -0.5,
-                    ),
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
+                          color: CupertinoColors.black,
+                        
                   ),
                 ],
               ),
 
-              // Notification button
-              GestureDetector(
-                onTap: onNotificationPressed,
+              // 🔔 Notification Button
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                minSize: 0,
+                onPressed: onNotificationPressed,
                 child: Container(
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.greycolor.withOpacity(0.4),
+                    color: CupertinoColors.systemGrey4.withOpacity(0.4),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -69,8 +77,8 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   child: Icon(
                     CupertinoIcons.bell,
-                    color: AppColors.primary,
                     size: 20.sp,
+                    color: AppColors.primary,
                   ),
                 ),
               ),

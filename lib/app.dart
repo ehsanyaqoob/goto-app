@@ -32,7 +32,7 @@ class _GoToAppState extends State<GoToApp> {
                       child: child!,
                     );
                   },
-                  home: InitialView(),
+                  home: SplashView(),
                 );
               },
             );

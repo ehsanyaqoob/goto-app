@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:goto/widgets/custom_text.dart';
 import 'package:sizer/sizer.dart';
 import 'package:goto/constants/exports.dart';
 
@@ -27,7 +28,7 @@ class PlanCard extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           height: 16.5.h,
-          width: 40.w,
+          width: 43.0.w,
           padding: EdgeInsets.all(2.h),
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -40,13 +41,13 @@ class PlanCard extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
+              color: AppColors.accent.withOpacity(0.2),
               width: 0.5,
             ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black12,
-                blurRadius: 10,
+                blurRadius: 20,
                 offset: Offset(0, 4),
               ),
             ],
@@ -61,25 +62,26 @@ class PlanCard extends StatelessWidget {
                     height: 5.5.h,
                     width: 5.5.h,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16),
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(32.0),
                     ),
                     child: Icon(
                       icon,
-                      color: AppColors.primary,
+                      color: AppColors.whiteColor,
                       size: 18.sp,
                     ),
                   ),
                   SizedBox(width: 2.w),
                   Expanded(
-                    child: Text(
+                    child: CustomText(
+                      text: 
                       title,
-                      style: TextStyle(
-                        fontSize: 11.5.sp,
+                        fontSize: 10.sp,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
-                        letterSpacing: -0.3,
-                      ),
+                        // letterSpacing: 0,
+                        
+                  
                     ),
                   ),
                 ],
@@ -87,15 +89,14 @@ class PlanCard extends StatelessWidget {
               SizedBox(height: 1.5.h),
 
               // Subtitle
-              Text(
+              CustomText(
+                text: 
                 subtitle,
-                style: TextStyle(
                   fontSize: 9.sp,
                   color: Colors.grey.shade600,
                   fontWeight: FontWeight.w400,
-                  letterSpacing: 0.1,
                 ),
-              ),
+              
 
               const Spacer(),
 
@@ -107,18 +108,18 @@ class PlanCard extends StatelessWidget {
                 },
                 child: Row(
                   children: [
-                    Text(
+                  CustomText(
+                    text: 
                       "Go to Plan",
-                      style: TextStyle(
-                        fontSize: 9.5.sp,
+                        fontSize: 12.5.sp,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
-                      ),
+                      
                     ),
-                    SizedBox(width: 1.w),
+                    SizedBox(width: 2.w),
                     Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 10.sp,
+                      Icons.arrow_forward,
+                      size: 16.0.sp,
                       color: AppColors.primary,
                     ),
                   ],
