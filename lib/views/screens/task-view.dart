@@ -1,10 +1,13 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:goto/constants/Theme/app_colors.dart';
 import 'package:goto/controllers/task_controller.dart';
+import 'package:goto/extension/media_query_extensions.dart';
+import 'package:goto/widgets/animated-entry/summary-dialog.dart';
+import 'package:goto/widgets/animated-entry/week-calendar.dart';
 import 'package:goto/widgets/custom_text.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
@@ -18,21 +21,65 @@ class TaskView extends StatefulWidget {
 
 class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
   final TaskController controller = Get.put(TaskController());
+  int _lastCompletedCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.completedTasksStream.listen((count) {
+      if (count == 5 && count > _lastCompletedCount) {
+        _showSuccessDialog();
+      }
+      _lastCompletedCount = count;
+    });
+  }
+
+  void _showSuccessDialog() {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => SuccessSummaryDialog(),
+    );
+  }
+
+  // Calculate workout metrics based on completed tasks
+  Map<String, dynamic> getWorkoutMetrics() {
+    final completedTasks = controller.tasks.where((task) => task.isDone).length;
+    final totalTasks = controller.tasks.length;
+    final completionRatio = totalTasks > 0 ? completedTasks / totalTasks : 0;
+    
+    return {
+      'calories': (300 * completionRatio).round(),
+      'fat': (10 * completionRatio).toStringAsFixed(1),
+      'carbs': (25 * completionRatio).round(),
+      'protein': (30 * completionRatio).toStringAsFixed(1),
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: CupertinoColors.systemGroupedBackground,
+      backgroundColor: AppColors.scaffoldBackgroundColor,
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
-        middle: CustomText(text: "🗓️ My Tasks", fontSize: 18.sp),
+        middle: CustomText(
+          text: "Plan Details", 
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w600,
+          color: AppColors.primary,
+        ),
+        trailing: Icon(
+          Icons.more_horiz_rounded,
+          color: AppColors.primary,
+          size: 24,
+        ),
         border: null,
-        backgroundColor: AppColors.scaffoldBackgroundColor,
-      ),
+        backgroundColor: AppColors.scaffoldBackgroundColor),
       child: SafeArea(
         child: Obx(() {
+          final metrics = getWorkoutMetrics();
           final selectedDate = controller.selectedDate.value;
           final tasks = controller.tasks;
+          
           return Stack(
             children: [
               CustomScrollView(
@@ -41,51 +88,100 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
                   SliverToBoxAdapter(
                     child: Column(
                       children: [
-                        AnimatedOpacity(
-                          duration: const Duration(milliseconds: 300),
-                          opacity: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 12,
-                              left: 16,
-                              right: 16,
-                            ),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                DateFormat('MMMM yyyy').format(selectedDate),
-                                style: TextStyle(
-                                  fontSize: 28.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Custom Week Calendar
                         Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12.0),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20.0),
+                            borderRadius: BorderRadius.circular(16.0),
                             child: BackdropFilter(
                               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withOpacity(0.3),
+                                  color: AppColors.whiteColor.withOpacity(0.3),
                                   borderRadius: BorderRadius.circular(18),
                                 ),
-                                height: 25.h,
+                                height: 10.h,
                                 width: double.infinity,
-                                child: CupertinoDatePicker(
-                                  mode: CupertinoDatePickerMode.date,
-                                  initialDateTime: selectedDate,
-                                  onDateTimeChanged:
-                                      controller.updateSelectedDate,
-                                ),
+                                
+                                child:HorizontalWeekCalendar(
+  selectedDate: selectedDate,
+  onDateSelected: controller.updateSelectedDate,
+  primaryColor: AppColors.primary,
+  daySize: 40,
+  dayMargin: 4,
+  dayTextStyle: TextStyle(
+    color: AppColors.primary,
+    fontWeight: FontWeight.normal,
+  ),
+  selectedDayTextStyle: TextStyle(
+    color: AppColors.whiteColor,
+    fontWeight: FontWeight.bold,
+  ),
+  weekdayTextStyle: TextStyle(
+    color: AppColors.primary,
+    fontWeight: FontWeight.w500,
+  ),
+  selectedItemPadding: 8, // Adjust this to control the background size
+),
                               ),
                             ),
                           ),
                         ),
+                        
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 6,
+                          ),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: CustomText(
+                              text: "Workout Report",
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildWorkoutItem(
+                                    "🔥", 
+                                    "${metrics['calories']}kKal", 
+                                    "calories burn"
+                                  ),
+                                  _buildWorkoutItem(
+                                    "🏃", 
+                                    "${metrics['fat']}g", 
+                                    "Fat burned"
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildWorkoutItem(
+                                    "💪", 
+                                    "${metrics['carbs']}g", 
+                                    "Carbs burned"
+                                  ),
+                                  _buildWorkoutItem(
+                                    "⏱️", 
+                                    "${metrics['protein']}g", 
+                                    "Protein gained"
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        10.0.height,
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,
@@ -94,9 +190,9 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              "📝 Tasks on ${DateFormat('MMMM d, yyyy').format(selectedDate)}",
+                              "Activity",
                               style: TextStyle(
-                                fontSize: 18.sp,
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.primary,
                               ),
@@ -123,7 +219,6 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
                     SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final task = tasks[index];
-
                         return TweenAnimationBuilder<double>(
                           tween: Tween(begin: 0, end: 1),
                           duration: Duration(milliseconds: 300 + (index * 50)),
@@ -165,8 +260,9 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
                                   vertical: 12,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: CupertinoColors
-                                      .secondarySystemGroupedBackground,
+                                  color: task.isDone
+                                      ? CupertinoColors.systemGrey5
+                                      : CupertinoColors.secondarySystemGroupedBackground,
                                   borderRadius: BorderRadius.circular(14),
                                   boxShadow: [
                                     BoxShadow(
@@ -181,12 +277,10 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
                                   children: [
                                     CupertinoButton(
                                       padding: EdgeInsets.zero,
-                                      onPressed: () => controller
-                                          .toggleTaskCompletion(index),
+                                      onPressed: () => controller.toggleTaskCompletion(index),
                                       child: Icon(
                                         task.isDone
-                                            ? CupertinoIcons
-                                                  .check_mark_circled_solid
+                                            ? CupertinoIcons.check_mark_circled_solid
                                             : CupertinoIcons.circle,
                                         color: task.isDone
                                             ? CupertinoColors.activeGreen
@@ -196,8 +290,7 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             task.title,
@@ -216,19 +309,21 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
                                           if (task.description.isNotEmpty)
                                             Text(
                                               task.description,
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontSize: 14,
-                                                color:
-                                                    CupertinoColors.systemGrey,
+                                                color: task.isDone
+                                                    ? CupertinoColors.systemGrey3
+                                                    : CupertinoColors.systemGrey,
                                               ),
                                             ),
                                           const SizedBox(height: 2),
                                           Text(
                                             "🕒 ${DateFormat.jm().format(task.date)}",
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 13,
-                                              color:
-                                                  CupertinoColors.systemGrey2,
+                                              color: task.isDone
+                                                  ? CupertinoColors.systemGrey3
+                                                  : CupertinoColors.systemGrey2,
                                             ),
                                           ),
                                         ],
@@ -247,6 +342,70 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
             ],
           );
         }),
+      ),
+    );
+  }
+
+  Widget _buildWorkoutItem(String emoji, String value, String label) {
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.greycolor.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(18.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Column(
+              children: [
+                Container(
+                  height: 5.h,
+                  width: 10.w,
+                  decoration: BoxDecoration(
+                    color: AppColors.appWhite.withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                  )],
+                  ),
+                  child: Center(
+                    child: CustomText(text: emoji, fontSize: 16.sp),
+                  ),
+                ),
+              ],
+            ),
+            8.0.width,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                CustomText(
+                  textAlign: TextAlign.start,
+                  text: value,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+                CustomText(
+                  textAlign: TextAlign.start,
+                  text: label,
+                  fontSize: 10.sp,
+                  color: CupertinoColors.systemGrey,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

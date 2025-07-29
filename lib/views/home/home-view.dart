@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goto/constants/exports.dart';
+import 'package:goto/controllers/task_controller.dart';
 import 'package:goto/views/screens/ongoing-plans/on-going-plan-screen.dart';
 import 'package:goto/views/screens/plans/personal-plans.dart';
 import 'package:goto/views/screens/plans/plans-screen.dart';
@@ -82,13 +83,12 @@ class _HomeViewState extends State<HomeView>
 
                   SizedBox(height: 2.h),
 
+                  // Example usage:
                   CupertinoTaskProgressCard(
-                    title: "Excellent, Today's Your",
-                    subtitle: "plan is almost done",
-                    progress: 0.78,
+                    taskController: Get.put(TaskController()),
                     actionText: "View Plan",
                     onActionPressed: () {
-                      print("Go to plan");
+                      print("Going to plans screen");
                     },
                   ),
 
@@ -167,7 +167,8 @@ class _HomeViewState extends State<HomeView>
                     tag: 'ongoing-card-1',
                     child: OngoingPlanCard(
                       emojiIcon: '📚',
-                      title: "Study iOS Design Patterns",
+                      title:
+                          'Study iOS Design Patterns\nand responsive on mobile',
                       checkbox1Text: "Review MVC vs MVVM",
                       checkbox2Text: "Build demo app using MVVM",
                     ),

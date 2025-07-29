@@ -59,30 +59,22 @@ class PlanCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    height: 5.5.h,
-                    width: 5.5.h,
+                    height: 4.4.h,
+                    width: 4.4.h,
                     decoration: BoxDecoration(
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(32.0),
                     ),
-                    child: Icon(
-                      icon,
-                      color: AppColors.whiteColor,
-                      size: 18.sp,
-                    ),
+                    child: Icon(icon, color: AppColors.whiteColor, size: 16.sp),
                   ),
                   SizedBox(width: 2.w),
-                  Expanded(
-                    child: CustomText(
-                      text: 
-                      title,
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
-                        // letterSpacing: 0,
-                        
-                  
-                    ),
+                  CustomText(
+                    text: title,
+                    fontSize: 9.0.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+
+                    // letterSpacing: 0,
                   ),
                 ],
               ),
@@ -90,13 +82,11 @@ class PlanCard extends StatelessWidget {
 
               // Subtitle
               CustomText(
-                text: 
-                subtitle,
-                  fontSize: 9.sp,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.w400,
-                ),
-              
+                text: subtitle,
+                fontSize: 9.sp,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w400,
+              ),
 
               const Spacer(),
 
@@ -108,13 +98,11 @@ class PlanCard extends StatelessWidget {
                 },
                 child: Row(
                   children: [
-                  CustomText(
-                    text: 
-                      "Go to Plan",
-                        fontSize: 12.5.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
-                      
+                    CustomText(
+                      text: "Go to Plan",
+                      fontSize: 12.5.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
                     ),
                     SizedBox(width: 2.w),
                     Icon(
