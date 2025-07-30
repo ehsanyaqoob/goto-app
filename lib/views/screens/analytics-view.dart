@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goto/constants/Theme/app_colors.dart';
@@ -17,18 +16,25 @@ class _AnalyticsViewState extends State<AnalyticsView> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
+    return Scaffold(
       backgroundColor: AppColors.scaffoldBackgroundColor,
-      navigationBar: CupertinoNavigationBar(
+      appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: AppColors.scaffoldBackgroundColor,
-        middle: CustomText(
-          text: "📈 Analytics",
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.analytics, color: AppColors.primary),
+            SizedBox(width: 8),
+            CustomText(
+              text: "Analytics",
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ],
         ),
       ),
-      child: SafeArea(
+      body: SafeArea(
         child: Obx(() {
           final allTasks = controller.tasks;
           final completed = allTasks.where((e) => e.isDone).toList();
@@ -39,28 +45,34 @@ class _AnalyticsViewState extends State<AnalyticsView> {
 
           return Padding(
             padding: const EdgeInsets.all(20),
-            child: CupertinoScrollbar(
+            child: Scrollbar(
               child: ListView(
                 physics: const BouncingScrollPhysics(),
                 children: [
                   const SizedBox(height: 16),
 
-                  _buildEmojiSummary("📊", "Total Tasks", total.toString()),
+                  _buildIconSummary(Icons.assessment, "Total Tasks", total.toString()),
                   const SizedBox(height: 8),
 
-                  _buildEmojiSummary("✅", "Completed Tasks", completed.length.toString()),
+                  _buildIconSummary(Icons.check_circle, "Completed Tasks", completed.length.toString()),
                   const SizedBox(height: 8),
 
-                  _buildEmojiSummary("🕗", "Pending Tasks", pending.length.toString()),
+                  _buildIconSummary(Icons.access_time, "Pending Tasks", pending.length.toString()),
                   const SizedBox(height: 8),
 
-                  _buildEmojiSummary("📌", "Completion Rate", "${percent.toStringAsFixed(1)}%"),
+                  _buildIconSummary(Icons.trending_up, "Completion Rate", "${percent.toStringAsFixed(1)}%"),
 
                   const SizedBox(height: 24),
-                  CustomText(
-                    text: "📅 Productivity By Day",
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_view_day, size: 20, color: Colors.blue),
+                      SizedBox(width: 8),
+                      CustomText(
+                        text: "Productivity By Day",
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   _buildGroupedTasksByDay(allTasks),
@@ -73,16 +85,16 @@ class _AnalyticsViewState extends State<AnalyticsView> {
     );
   }
 
-  Widget _buildEmojiSummary(String emoji, String label, String value) {
+  Widget _buildIconSummary(IconData icon, String label, String value) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
-        color: CupertinoColors.systemGrey6,
+        color: Colors.grey[200],
       ),
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 22)),
+          Icon(icon, size: 24, color:AppColors.primary),
           const SizedBox(width: 12),
           Expanded(
             child: CustomText(
@@ -124,13 +136,12 @@ class _AnalyticsViewState extends State<AnalyticsView> {
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color: CupertinoColors.secondarySystemGroupedBackground,
+            color: Colors.grey[100],
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
-              const Icon(CupertinoIcons.calendar,
-                  size: 18, color: CupertinoColors.systemGrey),
+              const Icon(Icons.calendar_today, size: 18, color: Colors.grey),
               const SizedBox(width: 10),
               Expanded(
                 child: CustomText(

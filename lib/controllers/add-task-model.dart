@@ -211,7 +211,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                       child: CupertinoButton.filled(
                         onPressed: _saveTask,
                         padding: const EdgeInsets.symmetric(horizontal: 30),
-                        child: const Text("✅ Save"),
+                        child: const Text("Save"),
                       ),
                     ),
                   ],

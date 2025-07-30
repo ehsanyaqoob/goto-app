@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:goto/constants/Theme/app_colors.dart';
+import 'package:goto/controllers/add-task-model.dart';
 import 'package:goto/controllers/task_controller.dart';
 import 'package:goto/extension/media_query_extensions.dart';
 import 'package:goto/widgets/animated-entry/summary-dialog.dart';
@@ -55,6 +56,15 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
     };
   }
 
+  void _showAddTaskBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) =>  AddTaskBottomSheet(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -75,14 +85,14 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
         border: null,
         backgroundColor: AppColors.scaffoldBackgroundColor),
       child: SafeArea(
-        child: Obx(() {
-          final metrics = getWorkoutMetrics();
-          final selectedDate = controller.selectedDate.value;
-          final tasks = controller.tasks;
-          
-          return Stack(
-            children: [
-              CustomScrollView(
+        child: Stack(
+          children: [
+            Obx(() {
+              final metrics = getWorkoutMetrics();
+              final selectedDate = controller.selectedDate.value;
+              final tasks = controller.tasks;
+              
+              return CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
                   SliverToBoxAdapter(
@@ -102,27 +112,26 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
                                 ),
                                 height: 10.h,
                                 width: double.infinity,
-                                
-                                child:HorizontalWeekCalendar(
-  selectedDate: selectedDate,
-  onDateSelected: controller.updateSelectedDate,
-  primaryColor: AppColors.primary,
-  daySize: 40,
-  dayMargin: 4,
-  dayTextStyle: TextStyle(
-    color: AppColors.primary,
-    fontWeight: FontWeight.normal,
-  ),
-  selectedDayTextStyle: TextStyle(
-    color: AppColors.whiteColor,
-    fontWeight: FontWeight.bold,
-  ),
-  weekdayTextStyle: TextStyle(
-    color: AppColors.primary,
-    fontWeight: FontWeight.w500,
-  ),
-  selectedItemPadding: 8, // Adjust this to control the background size
-),
+                                child: HorizontalWeekCalendar(
+                                  selectedDate: selectedDate,
+                                  onDateSelected: controller.updateSelectedDate,
+                                  primaryColor: AppColors.primary,
+                                  daySize: 40,
+                                  dayMargin: 4,
+                                  dayTextStyle: TextStyle(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                  selectedDayTextStyle: TextStyle(
+                                    color: AppColors.whiteColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  weekdayTextStyle: TextStyle(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  selectedItemPadding: 8,
+                                ),
                               ),
                             ),
                           ),
@@ -337,11 +346,51 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
                         );
                       }, childCount: tasks.length),
                     ),
+                  // Add padding at the bottom for the FAB
+                  SliverPadding(
+                    padding: EdgeInsets.only(bottom: 80),
+                  ),
                 ],
+              );
+            }),
+            // Positioned FAB at the bottom center
+            Positioned(
+              bottom: 30,
+              left: 290,
+              right: 0,
+              child: Center(
+                child: Container(
+                  height: 60, // Standard FAB size
+  width: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.lime,
+                        AppColors.lime.withOpacity(0.9),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: _showAddTaskBottomSheet,
+                    child: Icon(Icons.add, color: Colors.white, size: 24),
+                  ),
+                ),
               ),
-            ],
-          );
-        }),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -378,7 +427,7 @@ class _TaskViewState extends State<TaskView> with TickerProviderStateMixin {
                         color: Colors.black.withOpacity(0.05),
                         blurRadius: 4,
                         offset: Offset(0, 2),
-                  )],
+                      )],
                   ),
                   child: Center(
                     child: CustomText(text: emoji, fontSize: 16.sp),
